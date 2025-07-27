@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+boto3
+google-auth
+google-api-python-client
+azure-identity
+azure-mgmt-costmanagement
+python-dotenv

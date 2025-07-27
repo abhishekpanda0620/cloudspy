@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.env
+*.log
+*.sqlite3
+venv/
+.env
+
+# FastAPI-related
+*.db
+*.pid
+
+# Node
+node_modules/
+dist/
+.next/
+.build/
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Docker
+*.tar
+docker-compose.override.yml
