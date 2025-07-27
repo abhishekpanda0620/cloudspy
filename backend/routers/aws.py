@@ -48,7 +48,6 @@ def get_aws_costs(
             ]
         )
         raw_data = response['ResultsByTime'][0]['Groups']
-        return raw_data
         normalized = []
         for item in raw_data:
             amount = float(item["Metrics"]["UnblendedCost"]["Amount"])
