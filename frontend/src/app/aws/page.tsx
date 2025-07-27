@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { fetchAwsCosts } from '../../../lib/api';
 import DashboardLayout from '../DashboardLayout';
-import Image from 'next/image';
 
 
 type CostItem = {
@@ -13,17 +12,22 @@ type CostItem = {
 };
 
 export default function AwsPage() {
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  const todayStr = `${yyyy}-${mm}-${dd}`;
+  const firstDayStr = `${yyyy}-${mm}-01`;
   const [data, setData] = useState<CostItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [startDate, setStartDate] = useState<string>('2024-06-01');
-  const [endDate, setEndDate] = useState<string>('2024-07-01');
-  const [region, setRegion] = useState<string>('us-east-1');
+  const [startDate, setStartDate] = useState<string>(firstDayStr);
+  const [endDate, setEndDate] = useState<string>(todayStr);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setLoading(true);
     setError(null);
-    fetchAwsCosts({ start: startDate, end: endDate, region })
+    fetchAwsCosts({ start: startDate, end: endDate })
       .then(res => {
         if (Array.isArray(res)) {
           setData(res);
@@ -40,7 +44,7 @@ export default function AwsPage() {
         setData([]);
       })
       .finally(() => setLoading(false));
-  }, [startDate, endDate, region]);
+  }, [startDate, endDate]);
 
   // Calculate total cost (placeholder logic)
   const totalCost = Array.isArray(data) ? data.reduce((sum, item) => sum + item.amount, 0) : 0;
@@ -74,21 +78,7 @@ export default function AwsPage() {
             className="border rounded px-2 py-1"
             min={startDate}
           />
-          <label className="text-sm text-gray-700 font-medium">Region:</label>
-          <select
-            value={region}
-            onChange={e => setRegion(e.target.value)}
-            className="border rounded px-2 py-1"
-          >
-            <option value="us-east-1">US East (N. Virginia)</option>
-            <option value="us-west-1">US West (N. California)</option>
-            <option value="us-west-2">US West (Oregon)</option>
-            <option value="eu-west-1">EU (Ireland)</option>
-            <option value="eu-central-1">EU (Frankfurt)</option>
-            <option value="ap-south-1">Asia Pacific (Mumbai)</option>
-            <option value="ap-northeast-1">Asia Pacific (Tokyo)</option>
-            {/* Add more regions as needed */}
-          </select>
+         
         </div>
 
         {/* Summary Card */}
