@@ -32,7 +32,7 @@ Our mission is to:
 
 #### Frontend
 
-* [x] Set up React + Tailwind frontend
+* [x] Set up Next + Tailwind frontend
 * [ ] Create login/dashboard layout
 * [ ] Show AWS cost trend (Last 30 days)
 * [ ] Show unified table of running resources by provider/region
