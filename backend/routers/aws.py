@@ -5,6 +5,38 @@ from fastapi.responses import JSONResponse
 
 router = APIRouter()
 
+@router.get("/aws/connect")
+def test_aws_connection(roleArn: str = Query(None, description="AWS IAM Role ARN for test connection")):
+    if not roleArn:
+        return JSONResponse(status_code=400, content={"error": "roleArn is required"})
+    try:
+        sts = boto3.client('sts')
+        assumed = sts.assume_role(
+            RoleArn=roleArn,
+            RoleSessionName='TestConnectionSession'
+        )
+        creds = assumed['Credentials']
+        ce = boto3.client(
+            'ce',
+            aws_access_key_id=creds['AccessKeyId'],
+            aws_secret_access_key=creds['SecretAccessKey'],
+            aws_session_token=creds['SessionToken']
+        )
+        # Use a fixed valid date for the test call (today to today)
+        today = datetime.utcnow().date()
+        ce.get_cost_and_usage(
+            TimePeriod={
+                'Start': str(today),
+                'End': str(today)
+            },
+            Granularity='MONTHLY',
+            Metrics=['UnblendedCost'],
+        )
+        return JSONResponse(content={"success": True})
+    except Exception as e:
+        return JSONResponse(status_code=403, content={"error": str(e)})
+
+
 @router.get("/aws/costs")
 def get_aws_costs(
     start: str = Query(None, description="Start date in YYYY-MM-DD"),
