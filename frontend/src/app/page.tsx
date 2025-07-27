@@ -150,6 +150,11 @@ export default function HomePage() {
                   <li>Copy the Role ARN and paste it in CloudSpy's AWS integration settings.</li>
                   <li>Example ARN: <code className="bg-gray-100 px-1 break-all rounded">arn:aws:iam::123456789012:role/CloudSpyCostRole</code></li>
                 </ol>
+                <div className="flex flex-col gap-2 mt-4">
+                  <label htmlFor="aws-arn" className="text-sm font-medium text-amber-700">Role ARN</label>
+                  <input id="aws-arn" type="text" placeholder="Paste your AWS Role ARN here" className="border border-amber-200 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400" />
+                  <button className="bg-amber-600 text-white px-4 py-1 rounded mt-2 hover:bg-amber-700 transition text-sm font-semibold">Save</button>
+                </div>
               </div>
               <button
                 className="bg-amber-700 text-white px-5 py-2 rounded-lg shadow hover:bg-amber-800 transition flex items-center gap-2 text-base font-semibold mt-2"
@@ -178,6 +183,11 @@ export default function HomePage() {
                   <li>Paste the OAuth Client ID in CloudSpy's GCP integration settings.</li>
                   <li>Example Client ID: <code className="bg-gray-100 px-1 rounded">1234567890-abcdefg.apps.googleusercontent.com</code></li>
                 </ol>
+                <div className="flex flex-col gap-2 mt-4">
+                  <label htmlFor="gcp-client-id" className="text-sm font-medium text-blue-700">OAuth Client ID</label>
+                  <input id="gcp-client-id" type="text" placeholder="Paste your GCP OAuth Client ID here" className="border border-blue-200 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
+                  <button className="bg-blue-700 text-white px-4 py-1 rounded mt-2 hover:bg-blue-800 transition text-sm font-semibold">Save</button>
+                </div>
               </div>
               <button
                 className="bg-blue-700 text-white px-5 py-2 rounded-lg shadow hover:bg-blue-800 transition flex items-center gap-2 text-base font-semibold mt-2"
@@ -206,6 +216,13 @@ export default function HomePage() {
                   <li>Enter the Client ID and Tenant ID in CloudSpy's Azure integration settings.</li>
                   <li>Example Client ID: <code className="bg-gray-100 px-1 rounded">abcdefg-1234-5678-9101-abcdefabcdef</code></li>
                 </ol>
+                <div className="flex flex-col gap-2 mt-4">
+                  <label htmlFor="azure-client-id" className="text-sm font-medium text-blue-500">Client ID</label>
+                  <input id="azure-client-id" type="text" placeholder="Paste your Azure Client ID here" className="border border-blue-200 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
+                  <label htmlFor="azure-tenant-id" className="text-sm font-medium text-blue-500 mt-2">Tenant ID</label>
+                  <input id="azure-tenant-id" type="text" placeholder="Paste your Azure Tenant ID here" className="border border-blue-200 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
+                  <button className="bg-blue-500 text-white px-4 py-1 rounded mt-2 hover:bg-blue-600 transition text-sm font-semibold">Save</button>
+                </div>
               </div>
               <button
                 className="bg-blue-500 text-white px-5 py-2 rounded-lg shadow hover:bg-blue-600 transition flex items-center gap-2 text-base font-semibold mt-2"
@@ -220,7 +237,7 @@ export default function HomePage() {
               {testStatus['azure'] === 'success' && <span className="text-green-600 text-sm mt-2">Connection successful!</span>}
               {testStatus['azure'] === 'error' && <span className="text-red-600 text-sm mt-2">Connection failed. Check your Client ID and permissions.</span>}
             </Card>
-          </div>
+          </div>  
         </TabsContent>
       </Tabs>
     </div>

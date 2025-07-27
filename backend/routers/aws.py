@@ -8,14 +8,19 @@ router = APIRouter()
 @router.get("/aws/costs")
 def get_aws_costs(
     start: str = Query(None, description="Start date in YYYY-MM-DD"),
-    end: str = Query(None, description="End date in YYYY-MM-DD")
+    end: str = Query(None, description="End date in YYYY-MM-DD"),
+    roleArn: str = Query(None, description="AWS IAM Role ARN for Cost Explorer access")
 ):
+    if not roleArn:
+        return JSONResponse(status_code=400, content={"error": "roleArn is required"})
+    if not start and not end:
+        return JSONResponse(status_code=400, content={"error": "Start date and end date must be provided"})
     try:
         # Use env vars or IAM role (best practice)
         # client = boto3.client("ce", region_name="us-east-1")
         sts = boto3.client('sts')
         assumed = sts.assume_role(
-            RoleArn='arn:aws:iam::333749460279:role/CostExplorerReadOnlyAccessRole',
+            RoleArn=roleArn if roleArn else 'arn:aws:iam::333749460279:role/CostExplorerReadOnlyAccessRole',
             RoleSessionName='CostAccessSession'
         )
         creds = assumed['Credentials']

@@ -19,15 +19,16 @@ export default function AwsPage() {
   const todayStr = `${yyyy}-${mm}-${dd}`;
   const firstDayStr = `${yyyy}-${mm}-01`;
   const [data, setData] = useState<CostItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [startDate, setStartDate] = useState<string>(firstDayStr);
   const [endDate, setEndDate] = useState<string>(todayStr);
   const [error, setError] = useState<string | null>(null);
+  const [roleArn, setRoleArn] = useState<string>("");
 
-  useEffect(() => {
+  const handleFetch = () => {
     setLoading(true);
     setError(null);
-    fetchAwsCosts({ start: startDate, end: endDate })
+    fetchAwsCosts({ start: startDate, end: endDate, roleArn })
       .then(res => {
         if (Array.isArray(res)) {
           setData(res);
@@ -44,7 +45,7 @@ export default function AwsPage() {
         setData([]);
       })
       .finally(() => setLoading(false));
-  }, [startDate, endDate]);
+  };
 
   // Calculate total cost (placeholder logic)
   const totalCost = Array.isArray(data) ? data.reduce((sum, item) => sum + item.amount, 0) : 0;
@@ -58,6 +59,25 @@ export default function AwsPage() {
             <h1 className="text-3xl font-bold text-amber-700">AWS Cost Dashboard</h1>
             <p className="text-gray-600 text-sm">Unified visibility into your AWS cloud spend. Secure, actionable, and cloud-agnostic.</p>
           </div>
+        </div>
+        {/* Role ARN Input */}
+        <div className="flex gap-4 items-center mb-6 flex-wrap">
+          <label htmlFor="role-arn" className="text-sm text-amber-700 font-medium">Role ARN:</label>
+          <input
+            id="role-arn"
+            type="text"
+            value={roleArn}
+            onChange={e => setRoleArn(e.target.value)}
+            placeholder="Paste your AWS Role ARN here"
+            className="border border-amber-200 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 w-96"
+          />
+          <button
+            className="bg-amber-600 text-white px-4 py-2 rounded hover:bg-amber-700 transition text-sm font-semibold"
+            onClick={handleFetch}
+            disabled={loading || !roleArn}
+          >
+            {loading ? 'Fetching...' : 'Fetch Data'}
+          </button>
         </div>
 
         {/* Date Range & Region Picker */}
