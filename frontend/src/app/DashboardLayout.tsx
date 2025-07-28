@@ -19,10 +19,10 @@ export default function DashboardLayout({
       {/* Top Navigation Bar using shadcn NavigationMenu */}
       <nav className="bg-white shadow-sm px-8 py-4 sticky top-0 z-20">
         <div className="flex items-center justify-between max-w-6xl mx-auto">
-          <div className="flex items-center gap-4">
-            <Image src="/globe.svg" alt="CloudSpy" width={40} height={40} />
+          <Link href="/" className="flex items-center gap-4 no-underline">
+          <Image src="/globe.svg" alt="CloudSpy" width={40} height={40} />
             <span className="text-2xl font-extrabold text-amber-700 tracking-tight">CloudSpy</span>
-          </div>
+          </Link>
           <NavigationMenu className="bg-gray-100 rounded-lg px-2 py-1">
             <NavigationMenuList className="flex gap-2">
               <NavigationMenuItem>
