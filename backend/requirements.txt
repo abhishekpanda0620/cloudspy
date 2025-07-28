@@ -6,3 +6,10 @@ google-api-python-client
 azure-identity
 azure-mgmt-costmanagement
 python-dotenv
+sqlalchemy
+psycopg2-binary
+alembic
+pydantic-settings
+redis
+celery
+httpx
