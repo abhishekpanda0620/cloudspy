@@ -22,7 +22,6 @@ def test_aws_connection(roleArn: str = Query(None, description="AWS IAM Role ARN
             aws_secret_access_key=creds['SecretAccessKey'],
             aws_session_token=creds['SessionToken']
         )
-        # Use a fixed valid date for the test call (today to today)
         today = datetime.utcnow().date()
         ce.get_cost_and_usage(
             TimePeriod={
@@ -48,8 +47,7 @@ def get_aws_costs(
     if not start and not end:
         return JSONResponse(status_code=400, content={"error": "Start date and end date must be provided"})
     try:
-        # Use env vars or IAM role (best practice)
-        # client = boto3.client("ce", region_name="us-east-1")
+
         sts = boto3.client('sts')
         assumed = sts.assume_role(
             RoleArn=roleArn if roleArn else 'arn:aws:iam::333749460279:role/CostExplorerReadOnlyAccessRole',
