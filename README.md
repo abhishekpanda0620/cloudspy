@@ -16,7 +16,7 @@ cloudspy/
 ### 🔧 Backend Tech Stack
 
 * FastAPI
-* Python 3.11+
+* Python 3.12+
 * Pydantic for validation
 * Uvicorn for ASGI serving
 
