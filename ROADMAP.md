@@ -25,7 +25,7 @@ Our mission is to:
 * [x] Design modular router structure (AWS/GCP/Azure/Dashboard)
 * [x] Create base project structure (`backend/` folder with routers, utils, main.py)
 * [x] Add health check endpoint `/`
-* [ ] Add AWS Cost Explorer integration (Cross-account role based)
+* [x] Add AWS Cost Explorer integration (Cross-account role based)
 * [ ] Add GCP Billing API integration (OAuth)
 * [ ] Add Azure Cost Management API (OAuth or Service Principal)
 * [ ] Normalize resource and cost data schemas
@@ -33,14 +33,14 @@ Our mission is to:
 #### Frontend
 
 * [x] Set up Next + Tailwind frontend
-* [ ] Create login/dashboard layout
-* [ ] Show AWS cost trend (Last 30 days)
-* [ ] Show unified table of running resources by provider/region
+* [x] Create login/dashboard layout
+* [x] Show AWS cost trend (Last 30 days)
+* [x] Show unified table of running resources by provider/region
 * [ ] Filter by cloud/region/service
 
 #### Security
 
-* [ ] Role-based integration (AWS assume-role)
+* [x] Role-based integration (AWS assume-role)
 * [ ] OAuth 2.0 integration (GCP & Azure)
 * [ ] Encryption for all stored secrets/tokens (if used)
 
