@@ -28,20 +28,20 @@ export default function DashboardLayout({
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
                   <Link
-                    href="/aws"
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-amber-100 transition font-semibold text-gray-700 hover:text-amber-700"
+                    href="/dashboard"
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-indigo-100 transition font-semibold text-gray-700 hover:text-indigo-700"
                   >
-                    <span className="text-xl">🟧</span> AWS
+                    <span className="text-xl">📊</span> Dashboard
                   </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
                   <Link
-                    href="/gcp"
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-blue-100 transition font-semibold text-gray-700 hover:text-blue-700"
+                    href="/aws"
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-orange-100 transition font-semibold text-gray-700 hover:text-orange-700"
                   >
-                    <Image src="/globe.svg" alt="GCP" width={24} height={24} /> GCP
+                    <span className="text-xl">☁️</span> AWS
                   </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
@@ -49,9 +49,19 @@ export default function DashboardLayout({
                 <NavigationMenuLink asChild>
                   <Link
                     href="/azure"
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-blue-200 transition font-semibold text-gray-700 hover:text-blue-500"
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-blue-100 transition font-semibold text-gray-700 hover:text-blue-700"
                   >
-                    <Image src="/window.svg" alt="Azure" width={24} height={24} /> Azure
+                    <span className="text-xl">🔷</span> Azure
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <Link
+                    href="/gcp"
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-green-100 transition font-semibold text-gray-700 hover:text-green-700"
+                  >
+                    <span className="text-xl">🌐</span> GCP
                   </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
