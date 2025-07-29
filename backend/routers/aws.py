@@ -1,98 +1,84 @@
-from fastapi import APIRouter, Query
-import boto3
-from datetime import datetime, timedelta
+from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import JSONResponse
+from typing import List, Optional
+from datetime import datetime, timedelta
+from utils.aws_utils import AWSCostManager
+from models.schemas import CostMetric, ConnectionTest, ErrorResponse
 
-router = APIRouter()
+router = APIRouter(prefix="/aws", tags=["AWS"])
 
-@router.get("/aws/connect")
-def test_aws_connection(roleArn: str = Query(None, description="AWS IAM Role ARN for test connection")):
-    if not roleArn:
-        return JSONResponse(status_code=400, content={"error": "roleArn is required"})
+
+@router.post("/test-connection")
+def test_aws_connection(connection: ConnectionTest):
+    """Test AWS connection with provided credentials"""
     try:
-        sts = boto3.client('sts')
-        assumed = sts.assume_role(
-            RoleArn=roleArn,
-            RoleSessionName='TestConnectionSession'
+        creds = connection.credentials
+        manager = AWSCostManager(
+            role_arn=creds.get("role_arn"),
+            access_key=creds.get("access_key"),
+            secret_key=creds.get("secret_key"),
+            session_token=creds.get("session_token"),
         )
-        creds = assumed['Credentials']
-        ce = boto3.client(
-            'ce',
-            aws_access_key_id=creds['AccessKeyId'],
-            aws_secret_access_key=creds['SecretAccessKey'],
-            aws_session_token=creds['SessionToken']
-        )
-        today = datetime.utcnow().date()
-        ce.get_cost_and_usage(
-            TimePeriod={
-                'Start': str(today),
-                'End': str(today)
-            },
-            Granularity='MONTHLY',
-            Metrics=['UnblendedCost'],
-        )
-        return JSONResponse(content={"success": True})
+
+        result = manager.test_connection()
+        if result["success"]:
+            return {"success": True, "message": result["message"]}
+        else:
+            raise HTTPException(status_code=400, detail=result["error"])
+
     except Exception as e:
-        return JSONResponse(status_code=403, content={"error": str(e)})
+        raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/aws/costs")
+@router.get("/costs", response_model=List[CostMetric])
 def get_aws_costs(
-    start: str = Query(None, description="Start date in YYYY-MM-DD"),
-    end: str = Query(None, description="End date in YYYY-MM-DD"),
-    roleArn: str = Query(None, description="AWS IAM Role ARN for Cost Explorer access")
+    start_date: str = Query(..., description="Start date in YYYY-MM-DD format"),
+    end_date: str = Query(..., description="End date in YYYY-MM-DD format"),
+    role_arn: Optional[str] = Query(None, description="AWS IAM Role ARN"),
+    access_key: Optional[str] = Query(None, description="AWS Access Key"),
+    secret_key: Optional[str] = Query(None, description="AWS Secret Key"),
+    granularity: str = Query("MONTHLY", description="DAILY, MONTHLY, or YEARLY"),
+    group_by: Optional[str] = Query(
+        "SERVICE", description="Comma-separated list of dimensions"
+    ),
 ):
-    if not roleArn:
-        return JSONResponse(status_code=400, content={"error": "roleArn is required"})
-    if not start and not end:
-        return JSONResponse(status_code=400, content={"error": "Start date and end date must be provided"})
+    """Get AWS cost data"""
     try:
+        # Validate date format
+        datetime.strptime(start_date, "%Y-%m-%d")
+        datetime.strptime(end_date, "%Y-%m-%d")
 
-        sts = boto3.client('sts')
-        assumed = sts.assume_role(
-            RoleArn=roleArn if roleArn else 'arn:aws:iam::333749460279:role/CostExplorerReadOnlyAccessRole',
-            RoleSessionName='CostAccessSession'
+        manager = AWSCostManager(
+            role_arn=role_arn, access_key=access_key, secret_key=secret_key
         )
-        creds = assumed['Credentials']
-        ce = boto3.client(
-            'ce',
-            aws_access_key_id=creds['AccessKeyId'],
-            aws_secret_access_key=creds['SecretAccessKey'],
-            aws_session_token=creds['SessionToken']
+
+        group_by_list = group_by.split(",") if group_by else ["SERVICE"]
+        costs = manager.get_costs(start_date, end_date, granularity, group_by_list)
+
+        return costs
+
+    except ValueError as e:
+        raise HTTPException(
+            status_code=400, detail="Invalid date format. Use YYYY-MM-DD"
         )
-        # Default to previous 30 days if not provided
-        if not end:
-            end_date = datetime.utcnow().date()
-        else:
-            end_date = datetime.strptime(end, "%Y-%m-%d").date()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
-        if not start:
-            start_date = end_date - timedelta(days=30)
-        else:
-            start_date = datetime.strptime(start, "%Y-%m-%d").date()
 
-        response = ce.get_cost_and_usage(
-            TimePeriod={
-                'Start': str(start_date),
-                'End': str(end_date)
-            },
-            Granularity='MONTHLY',
-            Metrics = ['UnblendedCost', 'NetUnblendedCost'],
-            GroupBy=[
-                {"Type": "DIMENSION", "Key": "SERVICE"}
-            ]
+@router.get("/services")
+def get_aws_services(
+    role_arn: Optional[str] = Query(None, description="AWS IAM Role ARN"),
+    access_key: Optional[str] = Query(None, description="AWS Access Key"),
+    secret_key: Optional[str] = Query(None, description="AWS Secret Key"),
+):
+    """Get list of AWS services with cost data"""
+    try:
+        manager = AWSCostManager(
+            role_arn=role_arn, access_key=access_key, secret_key=secret_key
         )
-        raw_data = response['ResultsByTime'][0]['Groups']
-        normalized = []
-        for item in raw_data:
-            amount = float(item["Metrics"]["UnblendedCost"]["Amount"])
-            normalized.append({
-                "service": item["Keys"][0],
-                "amount": amount,
-                "unit": item["Metrics"]["UnblendedCost"]["Unit"]
-            })
 
-        return JSONResponse(content=normalized)
+        services = manager.get_services()
+        return {"services": services}
 
     except Exception as e:
-        return {"error": str(e)}
+        raise HTTPException(status_code=500, detail=str(e))
